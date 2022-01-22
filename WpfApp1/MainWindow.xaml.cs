@@ -1,6 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using Dapper;
+using Microsoft.Data.Sqlite;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Linq.Dynamic;
@@ -82,6 +86,42 @@ namespace WpfApp1
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            var apiList = GetApi().ToList();
+            var apiProperty = new List<string>();
+            foreach (var element in (apiList.First() as JObject))
+            {
+                apiProperty.Add(element.Key);
+            }
+            using (var connection = new SqliteConnection("Data Source=:memory:"))
+            {
+                connection.Open();
+                using (var tran = connection.BeginTransaction())
+                {
+                    var createSql = $@"CREATE TABLE Temp ({string.Join(",", apiProperty.Select(_ => $"{_} varchar(255)"))})";
+                    connection.Execute(createSql);
+                    //connection.Execute("create table Person as (@list)", list);
+                    var insertSql = $"insert into Temp values ({string.Join(", ", apiProperty.Select(_ => $"@{_}"))})";
+                    foreach (var item in apiList)
+                    {
+                        var parmeter = new DynamicParameters();
+                        foreach (var i in item as JObject)
+                        {
+                            parmeter.Add("@" + i.Key, i.Value.ToString());
+                        }
+
+                        connection.Execute(insertSql, parmeter);
+                    }
+                    tran.Commit();
+                    var query = connection.Query(!string.IsNullOrEmpty(searchModel.Text) ? searchModel.Text : "select * from Temp").ToList();
+
+                    dataGrid.ItemsSource = query;
+                }
+            }
+        }
+
+        private IEnumerable<dynamic> GetApi()
+        {
+
             var httppath = ip.Text + url.Text;
             var model = body.Text;
             var handler = new HttpClientHandler();
@@ -91,7 +131,7 @@ namespace WpfApp1
                 //建立 HttpClient
                 using (var client = new HttpClient(handler))
                 using (var contentPost = new StringContent(model, Encoding.UTF8, "application/json"))
-                using (var response = client.PostAsync(httppath, contentPost).Result)
+                using (var response = client.GetAsync(httppath).Result)
                 using (var stream = response.Content.ReadAsStreamAsync().Result)
                 using (var sr = new StreamReader(stream))
                 using (var reader = new JsonTextReader(sr))
@@ -103,10 +143,11 @@ namespace WpfApp1
                     //判斷 StatusCode
                     if (response.StatusCode != HttpStatusCode.BadRequest)
                     {
-                        //var result = serializer
-                        //   .Deserialize<IEnumerable<dynamic>>(reader)
-                        //   .Where(searchModel.Text);
-                        //datagrid.ItemsSource = result;
+                        var result = serializer
+                           .Deserialize<IEnumerable<dynamic>>(reader);
+                        //.Where("name==\"Ben\"")
+                        return result;
+
                     }
                     else
                     {
@@ -118,9 +159,19 @@ namespace WpfApp1
             }
             catch (Exception ex)
             {
-                datagrid.ItemsSource = new List<object> { new { error = ex.Message.ToString() } };
+                return new List<object> { new { error = ex.Message.ToString() } };
             }
-            
+        }
+
+        public class Person
+        {
+            public string Rdate { get; set; }
+            public string date { get; set; }
+            public string time { get; set; }
+            public string count { get; set; }
+            public string name { get; set; }
+            public string tel { get; set; }
+            public string mail { get; set; }
         }
     }
 }
