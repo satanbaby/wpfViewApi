@@ -1,0 +1,19 @@
+﻿<Window x:Class="WpfApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="850" Width="1378">
+    <Grid>
+        <Button Content="SendRequest&#xD;&#xA;" HorizontalAlignment="Left" Margin="669,35,0,0" VerticalAlignment="Top" Width="113" Click="Button_Click" Height="91"/>
+        <TextBox Name="ip" Text="http://localhost:51739" HorizontalAlignment="Left" Height="23" Margin="85,52,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="226"/>
+        <TextBlock HorizontalAlignment="Left" Margin="29,53,0,0" TextWrapping="Wrap" Text="網址" VerticalAlignment="Top" RenderTransformOrigin="0.511,-0.583"/>
+        <TextBox Name="url" Text="/api/D0103/GetD010309RawData" HorizontalAlignment="Left" Height="23" Margin="85,94,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="226" />
+        <TextBlock HorizontalAlignment="Left" Margin="29,95,0,0" TextWrapping="Wrap" Text="路徑" VerticalAlignment="Top" RenderTransformOrigin="0.511,-0.583"/>
+        <TextBox Name="body" HorizontalAlignment="Left" Height="57" Margin="328,53,0,0" TextWrapping="Wrap" Text="{}{}" VerticalAlignment="Top" Width="120"/>
+        <DataGrid Name="datagrid" HorizontalAlignment="Left" Height="678" Margin="10,131,0,0" VerticalAlignment="Top" Width="1350"/>
+        <TextBox x:Name="searchModel" HorizontalAlignment="Left" Height="57" Margin="470,53,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="176"/>
+    </Grid>
+</Window>
