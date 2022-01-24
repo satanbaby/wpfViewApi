@@ -32,6 +32,27 @@ namespace WpfApp1
         public MainWindow()
         {
             InitializeComponent();
+            List<ComboBoxPairs> cbp = new List<ComboBoxPairs>();
+
+            cbp.Add(new ComboBoxPairs("陸軍API", "http://localhost:51739/"));
+            cbp.Add(new ComboBoxPairs("空軍API", ""));
+            cbp.Add(new ComboBoxPairs("台船隆德", ""));
+            ip.DisplayMemberPath = "_Key";
+            ip.SelectedValuePath = "_Value";
+            ip.ItemsSource = cbp;
+            ip.SelectedIndex = 0;
+        }
+
+        public class ComboBoxPairs
+        {
+            public string _Key { get; set; }
+            public string _Value { get; set; }
+
+            public ComboBoxPairs(string _key, string _value)
+            {
+                _Key = _key;
+                _Value = _value;
+            }
         }
 
         /// <summary>
@@ -86,6 +107,11 @@ namespace WpfApp1
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(url.Text))
+            {
+                MessageBox.Show("請輸入API路徑");
+                return;
+            }
             var apiList = GetApi().ToList();
             var apiProperty = new List<string>();
             foreach (var element in (apiList.First() as JObject))
@@ -121,8 +147,7 @@ namespace WpfApp1
 
         private IEnumerable<dynamic> GetApi()
         {
-
-            var httppath = ip.Text + url.Text;
+            var httppath = ip.SelectedValue + url.Text;
             var model = body.Text;
             var handler = new HttpClientHandler();
             handler.AutomaticDecompression = DecompressionMethods.GZip;
@@ -131,7 +156,7 @@ namespace WpfApp1
                 //建立 HttpClient
                 using (var client = new HttpClient(handler))
                 using (var contentPost = new StringContent(model, Encoding.UTF8, "application/json"))
-                using (var response = client.GetAsync(httppath).Result)
+                using (var response = client.PostAsync(httppath, contentPost).Result)
                 using (var stream = response.Content.ReadAsStreamAsync().Result)
                 using (var sr = new StreamReader(stream))
                 using (var reader = new JsonTextReader(sr))

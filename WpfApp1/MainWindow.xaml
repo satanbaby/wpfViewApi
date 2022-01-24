@@ -6,14 +6,17 @@
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
         Title="MainWindow" Height="850" Width="1378">
-    <Grid>
-        <Button Content="SendRequest&#xD;&#xA;" HorizontalAlignment="Left" Margin="1247,33,0,0" VerticalAlignment="Top" Width="113" Click="Button_Click" Height="91"/>
-        <TextBox Name="ip" FontSize="20" Text="https://raw.githubusercontent.com/satanbaby/CSUMIS/master/reservation.json" HorizontalAlignment="Left" Height="32" Margin="85,52,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="693" />
+    <Grid Margin="0,0,0,84">
+        <Button Content="SendRequest&#xD;&#xA;" HorizontalAlignment="Left" Margin="931,634,0,0" VerticalAlignment="Top" Width="429" Click="Button_Click" Height="91"/>
+        <!--<TextBox Name="ip" FontSize="20" Text="https://raw.githubusercontent.com/satanbaby/CSUMIS/master/reservation.json" HorizontalAlignment="Left" Height="32" Margin="85,52,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="693" />-->
         <TextBlock HorizontalAlignment="Left" Margin="29,53,0,0" TextWrapping="Wrap" Text="網址" VerticalAlignment="Top" RenderTransformOrigin="0.511,-0.583"/>
-        <TextBox Name="url" FontSize="24" Text="" HorizontalAlignment="Left" Height="32" Margin="85,94,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="693" />
+        <TextBox Name="url" FontSize="18" Text="" HorizontalAlignment="Left" Height="32" Margin="85,94,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="351" />
         <TextBlock HorizontalAlignment="Left" Margin="29,95,0,0" TextWrapping="Wrap" Text="路徑" VerticalAlignment="Top" RenderTransformOrigin="0.511,-0.583"/>
-        <TextBox Name="body" FontSize="32" HorizontalAlignment="Left" Height="94" Margin="802,32,0,0" TextWrapping="Wrap" Text="{}{}" VerticalAlignment="Top" Width="155"/>
-        <TextBox x:Name="searchModel" FontSize="32"  HorizontalAlignment="Left" Height="91" Margin="977,33,0,0" TextWrapping="Wrap" AcceptsReturn="True" Text="" VerticalAlignment="Top" Width="254"/>
-        <DataGrid x:Name="dataGrid" HorizontalAlignment="Left" Height="430" Margin="29,152,0,0" VerticalAlignment="Top" Width="880"/>
+        <TextBox Name="body" AcceptsReturn="True" FontSize="32" HorizontalAlignment="Left" Height="275" Margin="931,152,0,0" TextWrapping="Wrap" Text="{}{}" VerticalAlignment="Top" Width="429"/>
+        <TextBox x:Name="searchModel" FontSize="32"  HorizontalAlignment="Left" Height="167" Margin="931,462,0,0" TextWrapping="Wrap" AcceptsReturn="True" Text="" VerticalAlignment="Top" Width="429"/>
+        <DataGrid x:Name="dataGrid" HorizontalAlignment="Left" Height="573" Margin="29,152,0,0" VerticalAlignment="Top" Width="880"/>
+        <ComboBox Name="ip" HorizontalAlignment="Left" Margin="85,53,0,0" VerticalAlignment="Top" Width="231"/>
+        <Label Content="SQL" FontSize="20" HorizontalAlignment="Left" Margin="931,427,0,0" VerticalAlignment="Top" Width="180"/>
+        <Label Content="Request Body" FontSize="20" HorizontalAlignment="Left" Margin="931,112,0,0" VerticalAlignment="Top" Width="180"/>
     </Grid>
 </Window>
