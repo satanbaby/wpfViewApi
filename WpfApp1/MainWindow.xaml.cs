@@ -105,47 +105,64 @@ namespace WpfApp1
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(url.Text))
             {
                 MessageBox.Show("請輸入API路徑");
                 return;
             }
-            var apiList = GetApi().ToList();
-            var apiProperty = new List<string>();
-            foreach (var element in (apiList.First() as JObject))
+            progress.Content = "開始撈取API...";
+            var apiList = await GetApiAsync();
+            if (string.IsNullOrEmpty(searchModel.Text))
             {
-                apiProperty.Add(element.Key);
+                dataGrid.ItemsSource = apiList;
+                return;
             }
-            using (var connection = new SqliteConnection("Data Source=:memory:"))
+
+            try
             {
-                connection.Open();
-                using (var tran = connection.BeginTransaction())
+                var apiProperty = new List<string>();
+                foreach (var element in (apiList.First() as JObject))
                 {
-                    var createSql = $@"CREATE TABLE Temp ({string.Join(",", apiProperty.Select(_ => $"{_} varchar(255)"))})";
-                    connection.Execute(createSql);
-                    //connection.Execute("create table Person as (@list)", list);
-                    var insertSql = $"insert into Temp values ({string.Join(", ", apiProperty.Select(_ => $"@{_}"))})";
-                    foreach (var item in apiList)
-                    {
-                        var parmeter = new DynamicParameters();
-                        foreach (var i in item as JObject)
-                        {
-                            parmeter.Add("@" + i.Key, i.Value.ToString());
-                        }
-
-                        connection.Execute(insertSql, parmeter);
-                    }
-                    tran.Commit();
-                    var query = connection.Query(!string.IsNullOrEmpty(searchModel.Text) ? searchModel.Text : "select * from Temp").ToList();
-
-                    dataGrid.ItemsSource = query;
+                    apiProperty.Add(element.Key);
                 }
+                using (var connection = new SqliteConnection("Data Source=:memory:"))
+                {
+                    connection.Open();
+                    using (var tran = connection.BeginTransaction())
+                    {
+                        var createSql = $@"CREATE TABLE Temp ({string.Join(",", apiProperty.Select(_ => $"{_} varchar(255)"))})";
+                        connection.Execute(createSql);
+                        //connection.Execute("create table Person as (@list)", list);
+                        progress.Content = "寫入暫存表...";
+                        var insertSql = $"insert into Temp values ({string.Join(", ", apiProperty.Select(_ => $"@{_}"))})";
+                        foreach (var item in apiList)
+                        {
+                            var parmeter = new DynamicParameters();
+                            foreach (var i in item as JObject)
+                            {
+                                parmeter.Add("@" + i.Key, string.IsNullOrEmpty(i.Value.ToString()) ? null : i.Value.ToString());
+                            }
+
+                            await connection.ExecuteAsync(insertSql, parmeter);
+                        }
+                        tran.Commit();
+                        var query = connection.Query(!string.IsNullOrEmpty(searchModel.Text) ? searchModel.Text : "select * from Temp").ToList();
+                        progress.Content = $"完成，共{query.Count}";
+                        var temp = query.First() as IDictionary<string, object>;
+
+                        dataGrid.ItemsSource = query;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
             }
         }
 
-        private IEnumerable<dynamic> GetApi()
+        private async Task<IEnumerable<dynamic>> GetApiAsync()
         {
             var httppath = ip.SelectedValue + url.Text;
             var model = body.Text;
@@ -156,7 +173,7 @@ namespace WpfApp1
                 //建立 HttpClient
                 using (var client = new HttpClient(handler))
                 using (var contentPost = new StringContent(model, Encoding.UTF8, "application/json"))
-                using (var response = client.PostAsync(httppath, contentPost).Result)
+                using (var response = await client.PostAsync(httppath, contentPost))
                 using (var stream = response.Content.ReadAsStreamAsync().Result)
                 using (var sr = new StreamReader(stream))
                 using (var reader = new JsonTextReader(sr))
@@ -168,9 +185,13 @@ namespace WpfApp1
                     //判斷 StatusCode
                     if (response.StatusCode != HttpStatusCode.BadRequest)
                     {
-                        var result = serializer
+                        IEnumerable<dynamic> result = null;
+                        progress.Content = "撈取完成，反序列化...";
+                        await Task.Run(() =>
+                        {
+                            result = serializer
                            .Deserialize<IEnumerable<dynamic>>(reader);
-                        //.Where("name==\"Ben\"")
+                        });
                         return result;
 
                     }

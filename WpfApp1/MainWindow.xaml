@@ -12,11 +12,13 @@
         <TextBlock HorizontalAlignment="Left" Margin="29,53,0,0" TextWrapping="Wrap" Text="網址" VerticalAlignment="Top" RenderTransformOrigin="0.511,-0.583"/>
         <TextBox Name="url" FontSize="18" Text="" HorizontalAlignment="Left" Height="32" Margin="85,94,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="351" />
         <TextBlock HorizontalAlignment="Left" Margin="29,95,0,0" TextWrapping="Wrap" Text="路徑" VerticalAlignment="Top" RenderTransformOrigin="0.511,-0.583"/>
-        <TextBox Name="body" AcceptsReturn="True" FontSize="32" HorizontalAlignment="Left" Height="275" Margin="931,152,0,0" TextWrapping="Wrap" Text="{}{}" VerticalAlignment="Top" Width="429"/>
-        <TextBox x:Name="searchModel" FontSize="32"  HorizontalAlignment="Left" Height="167" Margin="931,462,0,0" TextWrapping="Wrap" AcceptsReturn="True" Text="" VerticalAlignment="Top" Width="429"/>
+        <TextBox Name="body" AcceptsReturn="True" FontSize="20" HorizontalAlignment="Left" Height="275" Margin="931,152,0,0" TextWrapping="Wrap" Text="{}{}" VerticalAlignment="Top" Width="429"/>
+        <TextBox x:Name="searchModel" FontSize="24"  HorizontalAlignment="Left" Height="167" Margin="931,462,0,0" TextWrapping="Wrap" AcceptsReturn="True" Text="" VerticalAlignment="Top" Width="429"/>
         <DataGrid x:Name="dataGrid" HorizontalAlignment="Left" Height="573" Margin="29,152,0,0" VerticalAlignment="Top" Width="880"/>
-        <ComboBox Name="ip" HorizontalAlignment="Left" Margin="85,53,0,0" VerticalAlignment="Top" Width="231"/>
+        <ComboBox Name="ip" HorizontalAlignment="Left" Margin="85,46,0,0" VerticalAlignment="Top" Width="351" Height="31"/>
         <Label Content="SQL" FontSize="20" HorizontalAlignment="Left" Margin="931,427,0,0" VerticalAlignment="Top" Width="180"/>
         <Label Content="Request Body" FontSize="20" HorizontalAlignment="Left" Margin="931,112,0,0" VerticalAlignment="Top" Width="180"/>
+        <ProgressBar Name="progressbar" HorizontalAlignment="Left" Height="30" Margin="699,766,0,-61" VerticalAlignment="Top" Width="661"/>
+        <Label Name="progress" Content="" HorizontalAlignment="Left" Height="30" Margin="503,766,0,-61" VerticalAlignment="Top" Width="191"/>
     </Grid>
 </Window>
